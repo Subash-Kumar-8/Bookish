@@ -1,0 +1,24 @@
+.scroll-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding: 10px 0;
+  scroll-behavior: smooth;
+}
+
+.scroll-card {
+  min-width: 200px; /* card width */
+  flex: 0 0 auto;
+}
+
+.card-img-top{
+    height: 150px;
+}
+
+.card{
+  cursor: pointer;
+}
+
+.scroll-card :hover{
+  transform: translateY(-6px);
+}
