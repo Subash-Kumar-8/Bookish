@@ -1,10 +1,14 @@
 export const getWishlist = async () => {
-  const res = await fetch("http://localhost:5000/api/wishlist");
-  return await res.json();
+  const res = await fetch("/api/wishlist", {
+    credentials: "include"
+  });
+
+  if (!res.ok) return [];
+  return res.json();
 };
 
 export const addWishlist = async (book) => {
-  await fetch("http://localhost:5000/api/wishlist", {
+  await fetch("/api/wishlist", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -19,7 +23,7 @@ export const addWishlist = async (book) => {
 };
 
 export const removeWishlist = async (id) => {
-  await fetch(`http://localhost:5000/api/wishlist/${id}`, {
+  await fetch(`/api/wishlist/${id}`, {
     method: "DELETE",
   });
 };

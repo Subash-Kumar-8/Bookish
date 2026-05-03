@@ -8,7 +8,7 @@ export const WishlistProvider = ({ children }) => {
   // 🔥 Load wishlist initially
   useEffect(() => {
     const fetchWishlist = async () => {
-      const res = await fetch("http://localhost:5000/api/wishlist");
+      const res = await fetch("/api/wishlist");
       const data = await res.json();
       setWishlist(data);
     };

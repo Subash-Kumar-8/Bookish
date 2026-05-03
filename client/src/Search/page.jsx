@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { searchBooks } from "../services/api";
 import "./search.css";
-import Header from "../Components/header";
-import { addWishlist } from "../utils/wishlist.js";
+import { addWishlist, removeWishlist } from "../utils/wishlist";
 import NoImage from "../assets/NoImage.png";
 
 const Search = () => {
@@ -13,18 +12,21 @@ const Search = () => {
   const [searchParams] = useSearchParams();
 
   const query = searchParams.get("q");
-  const subject = searchParams.get("subject").toUpperCase();
+  const subject = searchParams.get("subject")?.toUpperCase() || null;
 
   useEffect(() => {
     const loadWishlist = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/wishlist");
+        const res = await fetch("/api/wishlist", {
+          credentials: "include"
+        });
         const data = await res.json();
         setWishlistid(data.map((item) => item.bookId));
       } catch (err) {
         console.error("Error loading wishlist:", err);
       }
     };
+
     loadWishlist();
   }, []);
 
@@ -32,6 +34,7 @@ const Search = () => {
     const fetchBooks = async () => {
       try {
         let data;
+
         if (query) {
           data = await searchBooks(query);
         } else if (subject) {
@@ -39,12 +42,13 @@ const Search = () => {
         } else {
           return;
         }
+
         setBooks(data.items || []);
-        console.log(data);
       } catch (err) {
         console.error(err);
       }
     };
+
     fetchBooks();
   }, [query, subject]);
 
@@ -56,32 +60,27 @@ const Search = () => {
       </h2>
 
       <div className="row">
-        {books.map((book, index) => (
+        {books.map((book) => (
           <div
             className="col-md-3 mb-4"
-            key={index}
+            key={book.id}
             onClick={() => navigate(`/book/${book.id}`)}
             style={{ cursor: "pointer" }}
           >
             <div className="card h-100 book-card border-0">
-              
+
               <div className="image-wrapper">
                 <img
-                  src={
-                    book.volumeInfo.imageLinks?.thumbnail ||
-                    NoImage
-                  }
+                  src={book.volumeInfo.imageLinks?.thumbnail || NoImage}
                   className="card-img-top"
                   alt=""
                 />
               </div>
+
               <div className="card-body">
-                <h6 className="card-title">
-                  {book.volumeInfo.title}
-                </h6>
-                <p className="card-author">
-                  {book.volumeInfo.authors?.[0]}
-                </p>
+                <h6>{book.volumeInfo.title}</h6>
+                <p>{book.volumeInfo.authors?.[0]}</p>
+
                 <button
                   className={`btn mt-2 ${
                     wishlistid.includes(book.id)
@@ -93,13 +92,14 @@ const Search = () => {
 
                     if (wishlistid.includes(book.id)) {
                       await removeWishlist(book.id);
-
-                      setWishlistid(prev => prev.filter(id => id !== book.id));
+                      setWishlistid((prev) =>
+                        prev.filter((id) => id !== book.id)
+                      );
                     } else {
                       await addWishlist(book);
-
-                      setWishlistid(prev => [...prev, book.id]);
+                      setWishlistid((prev) => [...prev, book.id]);
                     }
+                    window.dispatchEvent(new Event("wishlistUpdated"));
                   }}
                 >
                   {wishlistid.includes(book.id) ? "💔" : "❤️"}

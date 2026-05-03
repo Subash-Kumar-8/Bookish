@@ -1,22 +1,28 @@
-import Logo from '../assets/hero.png'
+import Logo from '../assets/Logo.svg';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { getWishlist } from '../utils/wishlist.js';
+import { useAuth } from '../context/authContext.jsx';
 
 const Header = () => {
     const navigate = useNavigate();
-    const [query, setquery] = useState("");
-    const [wishlistcnt, setWishlistcnt] = useState(0);
+    const [query, setQuery] = useState("");
+    const [wishlistCnt, setWishlistCnt] = useState(0);
+
+    const { user, loading } = useAuth();
 
     const handleSearch = () => {
-        if (!query) return;
+        if (!query.trim()) return;
         navigate(`/search?q=${query}`);
     };
 
-
     const fetchCount = async () => {
-        const data = await getWishlist();
-        setWishlistcnt(data.length);
+        try {
+            const data = await getWishlist();
+            setWishlistCnt(data.length);
+        } catch (err) {
+            console.error("Wishlist fetch error:", err);
+        }
     };
 
     useEffect(() => {
@@ -28,23 +34,37 @@ const Header = () => {
         return () => window.removeEventListener("wishlistUpdated", fetchCount);
     }, []);
 
-    return (
-        <div className="text-bg-primary p-3 d-flex align-items-center gap-3 mb-3">
+    if (loading) return <p>Loading...</p>;
 
-            <img src={Logo} alt="" style={{ width: "75px" }} />
-            <h1 className="text-white m-0">Bookish</h1>
-            <div className="input-group w-50">
-                <input 
+    return (
+        <div className="text-bg-success p-3 d-flex align-items-center gap-3 mb-3">
+            <img
+                src={Logo}
+                alt="Logo"
+                style={{ width: "75px", cursor: 'pointer' }}
+                onClick={() => navigate('/')}
+            />
+            {user ? (
+                <h3 className="text-white m-0">
+                    Welcome, {user.name}
+                </h3>
+            ) : (
+                <h1 className="text-white m-0">
+                    Not Logged In
+                </h1>
+            )}
+            <div className="input-group" style={{ width: "600px" }}>
+                <input
                     type="text"
                     className="form-control bg-transparent border-light text-white"
                     placeholder='Search Books...'
                     value={query}
-                    onChange={(e) => setquery(e.target.value)}
+                    onChange={(e) => setQuery(e.target.value)}
                     onKeyDown={(e) => {
                         if (e.key === "Enter") handleSearch();
                     }}
                 />
-                <span 
+                <span
                     className="input-group-text bg-transparent border-light text-white"
                     onClick={handleSearch}
                     style={{ cursor: "pointer" }}
@@ -52,17 +72,42 @@ const Header = () => {
                     <i className="bi bi-search"></i>
                 </span>
             </div>
-            <div 
+            <div>
+                <ul className="nav">
+                    <li className="nav-item">
+                        <Link to="/about" className="nav-link">About</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/contact" className="nav-link">Contact</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/privacy-policy" className="nav-link">Privacy Policy</Link>
+                    </li>
+                </ul>
+            </div>
+            <div
                 className="bg-warning text-danger rounded-pill px-3 py-1 ms-auto"
                 onClick={() => navigate("/wishlist")}
-                style={{cursor: "pointer"}}
+                style={{ cursor: "pointer" }}
             >
-                ❤️ {wishlistcnt}
+                ❤️ {wishlistCnt || 0}
             </div>
-            <div 
-                className="bg-light rounded-circle"
-                style={{ height: "60px", width: "60px", cursor: "pointer" }}
-            ></div>
+            {user ? (
+                <div
+                    className="text-dark bg-light rounded-circle d-flex justify-content-center align-items-center"
+                    style={{ height: "60px", width: "60px", cursor: "pointer" }}
+                    onClick={() => navigate('/profile')}
+                >
+                    <h1>{user?.name?.charAt(0)?.toUpperCase()}</h1>
+                </div>
+            ) : (
+                <button
+                    className="btn btn-light"
+                    onClick={() => navigate('/signin')}
+                >
+                    Sign In
+                </button>
+            )}
 
         </div>
     );

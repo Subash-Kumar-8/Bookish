@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
+import { getHomeBooks } from "../services/api";
 
 const fictGen = [
   { index: 1, name: "Fiction", img: "/Fiction.avif" },
@@ -23,40 +24,38 @@ const nonFict = [
 ];
 
 const Home = () => {
+  const hasFetched = useRef(false);
   const navigate = useNavigate();
   const [popularBooks, setPopularBooks] = useState([]);
   const [loading, setLoading] = useState(true);
+
   const handleSearch = (gen) => {
     const formatted = gen.toLowerCase().replace(/\s+/g, "+");
     navigate(`/search?subject=${formatted}`);
   };
+
   useEffect(() => {
-    const fetchPopularBooks = async () => {
-      try {
-        const queries = ["bestseller", "fiction", "novel", "popular"];
-        const randomQuery =
-          queries[Math.floor(Math.random() * queries.length)];
+    if (hasFetched.current) return;
+    hasFetched.current = true;
 
-        const res = await fetch(
-          `https://www.googleapis.com/books/v1/volumes?q=${randomQuery}&maxResults=12`
-        );
+    const loadBooks = async () => {
+      setLoading(true);
 
-        const data = await res.json();
-        setPopularBooks(data.items || []);
-        setLoading(false);
-      } catch (err) {
-        console.error(err);
-        setLoading(false);
-      }
+      const data = await getHomeBooks();
+
+      setPopularBooks(data.items || []);
+      setLoading(false);
     };
 
-    fetchPopularBooks();
+    loadBooks();
   }, []);
 
   return (
     <div className="container pt-3">
+
       <div className="box p-3 border border-1 border-secondary rounded">
         <h1>Genres</h1>
+
         <div className="border border-1 border-secondary-subtle shadow-sm rounded mb-3">
           <h3 className="p-2">Fiction</h3>
           <div className="scroll-container">
@@ -67,11 +66,7 @@ const Home = () => {
                 onClick={() => handleSearch(genre.name)}
               >
                 <div className="card h-100 shadow-sm">
-                  <img
-                    src={genre.img}
-                    className="card-img-top"
-                    alt={genre.name}
-                  />
+                  <img src={genre.img} className="card-img-top" alt={genre.name} />
                   <div className="card-body text-center">
                     <h6>{genre.name}</h6>
                   </div>
@@ -80,6 +75,7 @@ const Home = () => {
             ))}
           </div>
         </div>
+
         <div className="border border-1 border-secondary-subtle shadow-sm rounded">
           <h3 className="p-2">Non-Fiction</h3>
           <div className="scroll-container">
@@ -90,11 +86,7 @@ const Home = () => {
                 onClick={() => handleSearch(genre.name)}
               >
                 <div className="card h-100 shadow-sm">
-                  <img
-                    src={genre.img}
-                    className="card-img-top"
-                    alt={genre.name}
-                  />
+                  <img src={genre.img} className="card-img-top" alt={genre.name} />
                   <div className="card-body text-center">
                     <h6>{genre.name}</h6>
                   </div>
@@ -130,12 +122,8 @@ const Home = () => {
                   />
 
                   <div className="card-body">
-                    <h6 className="card-title">
-                      {book.volumeInfo.title}
-                    </h6>
-                    <p className="card-author">
-                      {book.volumeInfo.authors?.[0] || "Unknown"}
-                    </p>
+                    <h6>{book.volumeInfo.title}</h6>
+                    <p>{book.volumeInfo.authors?.[0] || "Unknown"}</p>
                   </div>
                 </div>
               </div>
