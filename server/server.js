@@ -17,7 +17,7 @@ mongoose.connect(process.env.MONGO_URI)
 .catch((err) => (console.error(err)));
 
 app.use(cors({
-  origin: "http://localhost:5173", // your frontend
+  origin: ["http://localhost:5173", "https://bookish-five.vercel.app/"], 
   credentials: true
 }));
 app.use(express.json());
