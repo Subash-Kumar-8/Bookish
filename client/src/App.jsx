@@ -20,7 +20,9 @@ const App = () => {
   const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch(`${API}/api`)
+    fetch(`${API}/api`, {
+      credentials: "include"
+    })
       .then(res => res.text())
       .then(data => console.log(data))
       .catch(err => console.error("Error: ", err));

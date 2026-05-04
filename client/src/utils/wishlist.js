@@ -11,6 +11,7 @@ export const getWishlist = async () => {
 export const addWishlist = async (book) => {
   await fetch(`${API}/api/wishlist`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },
@@ -26,5 +27,6 @@ export const addWishlist = async (book) => {
 export const removeWishlist = async (id) => {
   await fetch(`${API}/api/wishlist/${id}`, {
     method: "DELETE",
+    credentials: "include"
   });
 };

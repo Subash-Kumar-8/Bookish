@@ -8,7 +8,9 @@ export const WishlistProvider = ({ children }) => {
   const API = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchWishlist = async () => {
-      const res = await fetch(`${API}/api/wishlist`);
+      const res = await fetch(`${API}/api/wishlist`, {
+        credentials: "include"
+      });
       const data = await res.json();
       setWishlist(data);
     };
