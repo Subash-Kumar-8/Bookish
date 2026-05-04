@@ -47,9 +47,9 @@ app.get('/', (req, res) => {
 app.get('/api', (req, res) => {
     res.send('Welcome to Bookish Backend');
 })
-
-app.listen(process.env.PORT, () => {
-    console.log("Bookish Backend is running");
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Bookish Backend is running on the port ${PORT}`);
 });
 
 app.post("/api/wishlist", authMiddleware, async (req, res) => {
