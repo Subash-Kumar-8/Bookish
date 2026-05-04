@@ -5,10 +5,10 @@ export const WishlistContext = createContext();
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
 
-  // 🔥 Load wishlist initially
+  const API = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchWishlist = async () => {
-      const res = await fetch("/api/wishlist");
+      const res = await fetch(`${API}/api/wishlist`);
       const data = await res.json();
       setWishlist(data);
     };

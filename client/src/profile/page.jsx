@@ -8,10 +8,11 @@ const Profile = () => {
 
     const [showModal, setShowModal] = useState(false);
     const [confirmPassword, setConfirmPassword] = useState("");
+    const API = import.meta.env.VITE_API_URL;
 
     const handleDeleteAccount = async () => {
         try {
-            const res = await fetch("/api/auth/delete", {
+            const res = await fetch(`${API}/api/auth/delete`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -34,7 +35,7 @@ const Profile = () => {
     };
 
     const handleLogout = async () => {
-        await fetch("/api/auth/logout", {
+        await fetch(`${API}/api/auth/logout`, {
             method: "POST",
             credentials: "include"
         });

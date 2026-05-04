@@ -8,7 +8,8 @@ export const AuthProvider = ({ children }) => {
 
     const fetchUser = async () => {
         try {
-            const res = await fetch("/api/auth/me", {
+            const API = import.meta.env.VITE_API_URL;
+            const res = await fetch(`${API}/api/auth/me`, {
                 credentials: "include"
             });
 

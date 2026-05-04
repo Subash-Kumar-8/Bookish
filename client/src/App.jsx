@@ -17,9 +17,10 @@ import ProtectedRoute from './Components/protectedRoute.jsx';
 
 const App = () => {
   const location = useLocation();
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch("/api")
+    fetch(`${API}/api`)
       .then(res => res.text())
       .then(data => console.log(data))
       .catch(err => console.error("Error: ", err));

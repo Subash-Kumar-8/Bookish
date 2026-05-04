@@ -13,11 +13,12 @@ const Search = () => {
 
   const query = searchParams.get("q");
   const subject = searchParams.get("subject")?.toUpperCase() || null;
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const loadWishlist = async () => {
       try {
-        const res = await fetch("/api/wishlist", {
+        const res = await fetch(`${API}/api/wishlist`, {
           credentials: "include"
         });
         const data = await res.json();

@@ -1,5 +1,6 @@
+const API = import.meta.env.VITE_API_URL;
 export const getWishlist = async () => {
-  const res = await fetch("/api/wishlist", {
+  const res = await fetch(`${API}/api/wishlist`, {
     credentials: "include"
   });
 
@@ -8,7 +9,7 @@ export const getWishlist = async () => {
 };
 
 export const addWishlist = async (book) => {
-  await fetch("/api/wishlist", {
+  await fetch(`${API}/api/wishlist`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -23,7 +24,7 @@ export const addWishlist = async (book) => {
 };
 
 export const removeWishlist = async (id) => {
-  await fetch(`/api/wishlist/${id}`, {
+  await fetch(`${API}/api/wishlist/${id}`, {
     method: "DELETE",
   });
 };
