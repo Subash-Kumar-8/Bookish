@@ -114,7 +114,7 @@ const Home = () => {
                 <div className="card h-100 shadow-sm border-0">
                   <img
                     src={
-                      book.volumeInfo.imageLinks?.thumbnail ||
+                      book.volumeInfo.imageLinks?.thumbnail.replace("http://", "https://") ||
                       "https://via.placeholder.com/150"
                     }
                     className="card-img-top"

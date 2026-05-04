@@ -72,7 +72,7 @@ const Search = () => {
 
               <div className="image-wrapper">
                 <img
-                  src={book.volumeInfo.imageLinks?.thumbnail || NoImage}
+                  src={book.volumeInfo.imageLinks?.thumbnail.replace("http://", "https://") || NoImage}
                   className="card-img-top"
                   alt=""
                 />

@@ -64,7 +64,7 @@ const BookDetails = () => {
 
         <div className="col-md-4">
           <img
-            src={info.imageLinks?.thumbnail || NOIMG}
+            src={info.imageLinks?.thumbnail.replace("http://", "https://") || NOIMG}
             alt={info.title}
             className="img-fluid rounded shadow"
           />

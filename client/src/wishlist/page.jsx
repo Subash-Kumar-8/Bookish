@@ -39,7 +39,7 @@ const Wishlist = () => {
           >
             <div className="card image-wrapper h-100">
               <img
-                src={book.thumbnail || NoImage}
+                src={book.thumbnail.replace("http://", "https://") || NoImage}
                 className="card-img-top"
                 alt="book"
               />
