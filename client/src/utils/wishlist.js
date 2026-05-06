@@ -1,7 +1,18 @@
 const API = import.meta.env.VITE_API_URL;
+const token = localStorage.getItem("token");
+
+const headers = {
+  "Content-Type": "application/json",
+  ...(token && { Authorization: `Bearer ${token}` })
+};
+
 export const getWishlist = async () => {
+  const token = localStorage.getItem("token");
   const res = await fetch(`${API}/api/wishlist`, {
-    credentials: "include"
+    credentials: "include",
+    headers: token
+      ? { Authorization: `Bearer ${token}` }
+      : {}
   });
 
   if (!res.ok) return [];
@@ -9,12 +20,11 @@ export const getWishlist = async () => {
 };
 
 export const addWishlist = async (book) => {
+  const token = localStorage.getItem("token");
   await fetch(`${API}/api/wishlist`, {
     method: "POST",
     credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: JSON.stringify({
       bookId: book.id,
       title: book.volumeInfo.title,
@@ -25,8 +35,12 @@ export const addWishlist = async (book) => {
 };
 
 export const removeWishlist = async (id) => {
+  const token = localStorage.getItem("token");
   await fetch(`${API}/api/wishlist/${id}`, {
     method: "DELETE",
-    credentials: "include"
+    credentials: "include",
+    headers: token
+      ? { Authorization: `Bearer ${token}` }
+      : {}
   });
 };

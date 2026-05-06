@@ -10,16 +10,20 @@ const Search = () => {
   const [books, setBooks] = useState([]);
   const [wishlistid, setWishlistid] = useState([]);
   const [searchParams] = useSearchParams();
-
   const query = searchParams.get("q");
   const subject = searchParams.get("subject")?.toUpperCase() || null;
   const API = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const loadWishlist = async () => {
+      const token = localStorage.getItem("token");
       try {
         const res = await fetch(`${API}/api/wishlist`, {
-          credentials: "include"
+          credentials: "include",
+            headers: token
+            ? { Authorization: `Bearer ${token}` }
+            : {}
         });
         const data = await res.json();
         setWishlistid(data.map((item) => item.bookId));

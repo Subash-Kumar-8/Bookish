@@ -10,6 +10,7 @@ const SignIn = () => {
     const [password, setPassword] = useState("");
     const [visible, setVisible] = useState(false);
     const { setUser } = useAuth();
+    const token = localStorage.getItem("token");
     
     const handleSignIn = async () => {
         if (!email || !password){
@@ -23,6 +24,9 @@ const SignIn = () => {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 credentials: "include",
+                  headers: token
+                    ? { Authorization: `Bearer ${token}` }
+                    : {},
                 body: JSON.stringify({email, password})
             });
 
@@ -30,6 +34,7 @@ const SignIn = () => {
 
             if(res.ok){
                 setUser(data.user);
+                localStorage.setItem("token", data.token);
                 navigate('/');
             } else {
                 alert(data.message || "Login Failed ❌");

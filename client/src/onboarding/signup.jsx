@@ -12,7 +12,10 @@ const SignUp = () => {
     const [visiblePass, setvisiblePass] = useState(false);
     const [visibleRe, setVisibleRe] = useState(false);
     const API = import.meta.env.VITE_API_URL;
+    const token = localStorage.getItem("token");
+
     const handleSignUp = async () => {
+      const token = localStorage.getItem("token");
         if (!name || !email || !password || !reenter){
             alert("Please Input All Fields");
             return;
@@ -25,6 +28,9 @@ const SignUp = () => {
             const res = await fetch(`${API}/api/auth/signup`, {
                 method: "POST",
                 credentials: "include",
+                  headers: token
+                    ? { Authorization: `Bearer ${token}` }
+                    : {},
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -46,6 +52,9 @@ const SignUp = () => {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 credentials: "include",
+                  headers: token
+                ? { Authorization: `Bearer ${token}` }
+                : {},
                 body: JSON.stringify({email, password})
             });
             if(loginRes.ok){

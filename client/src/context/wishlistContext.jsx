@@ -8,8 +8,12 @@ export const WishlistProvider = ({ children }) => {
   const API = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchWishlist = async () => {
+      const token = localStorage.getItem("token");
       const res = await fetch(`${API}/api/wishlist`, {
-        credentials: "include"
+        credentials: "include",
+          headers: token
+            ? { Authorization: `Bearer ${token}` }
+            : {}
       });
       const data = await res.json();
       setWishlist(data);

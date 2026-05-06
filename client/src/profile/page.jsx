@@ -9,13 +9,18 @@ const Profile = () => {
     const [showModal, setShowModal] = useState(false);
     const [confirmPassword, setConfirmPassword] = useState("");
     const API = import.meta.env.VITE_API_URL;
+    const token = localStorage.getItem("token");
 
     const handleDeleteAccount = async () => {
+      const token = localStorage.getItem("token");
         try {
             const res = await fetch(`${API}/api/auth/delete`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
+                  headers: token
+                    ? { Authorization: `Bearer ${token}` }
+                    : {},
                 body: JSON.stringify({ password: confirmPassword })
             });
 
@@ -37,7 +42,10 @@ const Profile = () => {
     const handleLogout = async () => {
         await fetch(`${API}/api/auth/logout`, {
             method: "POST",
-            credentials: "include"
+            credentials: "include",
+              headers: token
+                ? { Authorization: `Bearer ${token}` }
+                : {}
         });
 
         setUser(null);
