@@ -16,11 +16,11 @@ const Profile = () => {
         try {
             const res = await fetch(`${API}/api/auth/delete`, {
                 method: "DELETE",
-                headers: { "Content-Type": "application/json" },
                 credentials: "include",
-                  headers: token
-                    ? { Authorization: `Bearer ${token}` }
-                    : {},
+                headers: {
+                    "Content-Type": "application/json",
+                    ...(token && { Authorization: `Bearer ${token}` })
+                },
                 body: JSON.stringify({ password: confirmPassword })
             });
 
@@ -43,9 +43,9 @@ const Profile = () => {
         await fetch(`${API}/api/auth/logout`, {
             method: "POST",
             credentials: "include",
-              headers: token
-                ? { Authorization: `Bearer ${token}` }
-                : {}
+            headers: {
+                ...(token && { Authorization: `Bearer ${token}` })
+            }
         });
 
         setUser(null);

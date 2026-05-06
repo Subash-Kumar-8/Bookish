@@ -12,9 +12,9 @@ export const AuthProvider = ({ children }) => {
             const token = localStorage.getItem("token");
             const res = await fetch(`${API}/api/auth/me`, {
                 credentials: "include",
-                  headers: token
-                    ? { Authorization: `Bearer ${token}` }
-                    : {}
+                headers: {
+                    ...(token && { Authorization: `Bearer ${token}` })
+                }
             });
 
             if (res.ok) {

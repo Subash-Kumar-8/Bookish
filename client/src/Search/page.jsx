@@ -25,6 +25,8 @@ const Search = () => {
             ? { Authorization: `Bearer ${token}` }
             : {}
         });
+        if (!res.ok) return;
+
         const data = await res.json();
         setWishlistid(data.map((item) => item.bookId));
       } catch (err) {

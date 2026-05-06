@@ -15,6 +15,11 @@ export const WishlistProvider = ({ children }) => {
             ? { Authorization: `Bearer ${token}` }
             : {}
       });
+      if (!res.ok) {
+        setWishlist([]);
+        return;
+      }
+
       const data = await res.json();
       setWishlist(data);
     };

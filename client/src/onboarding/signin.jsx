@@ -22,12 +22,11 @@ const SignIn = () => {
             const API = import.meta.env.VITE_API_URL;
             const res = await fetch(`${API}/api/auth/login`, {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
                 credentials: "include",
-                  headers: token
-                    ? { Authorization: `Bearer ${token}` }
-                    : {},
-                body: JSON.stringify({email, password})
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ email, password })
             });
 
             const data = await res.json();
@@ -42,7 +41,7 @@ const SignIn = () => {
 
         } catch(err){
             console.error(err);
-            alert("Something went wrong 🚨");
+            alert(err.message);
         }
     };
     const toggleVisibility = () => {
