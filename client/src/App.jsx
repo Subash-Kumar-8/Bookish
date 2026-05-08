@@ -14,15 +14,14 @@ import Profile from "./profile/page.jsx";
 import SignUp from "./onboarding/signup.jsx";
 import SignIn from "./onboarding/signin.jsx";
 import ProtectedRoute from './Components/protectedRoute.jsx';
+import { fetchWithAuth } from './utils/fetchWithAuth.js';
 
 const App = () => {
   const location = useLocation();
   const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch(`${API}/api`, {
-      credentials: "include"
-    })
+    fetchWithAuth(`${API}/api`)
       .then(res => res.text())
       .then(data => console.log(data))
       .catch(err => console.error("Error: ", err));

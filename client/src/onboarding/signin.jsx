@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/authContext";
 import { setAccessToken } from "../utils/tokenStore";
+import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -22,9 +23,8 @@ const SignIn = () => {
     }
 
     try {
-      const res = await fetch(`${API}/api/auth/login`, {
+      const res = await fetchWithAuth(`${API}/api/auth/login`, {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

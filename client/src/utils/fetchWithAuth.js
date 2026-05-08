@@ -2,44 +2,57 @@ import { getAccessToken, setAccessToken, clearAccessToken } from "./tokenStore";
 
 const API = import.meta.env.VITE_API_URL;
 
-export const fetchWithAuth = async (url, options = {}) => {
-  let accessToken = getAccessToken();
+const refreshAccessToken = async () => {
+  try {
+    const res = await fetch(`${API}/api/auth/refresh`, {
+      method: "POST",
+      credentials: "include", // 🔥 required for cookie
+    });
 
-  const makeRequest = async () => {
-    return fetch(url, {
+    if (!res.ok) throw new Error("Refresh failed");
+
+    const data = await res.json();
+    setAccessToken(data.accessToken);
+
+    return data.accessToken;
+  } catch (err) {
+    clearAccessToken();
+    return null;
+  }
+};
+
+export const fetchWithAuth = async (url, options = {}, retry = true) => {
+  let token = getAccessToken();
+
+  // Attach access token
+  const config = {
+    ...options,
+    credentials: "include",
+    headers: {
+      ...(options.headers || {}),
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  };
+
+  let res = await fetch(url, config);
+
+  if (res.status === 401 && retry) {
+    const newToken = await refreshAccessToken();
+
+    if (!newToken) {
+      return res; 
+    }
+
+    const retryConfig = {
       ...options,
       credentials: "include",
       headers: {
-        "Content-Type": "application/json",
-        ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
         ...(options.headers || {}),
+        Authorization: `Bearer ${newToken}`,
       },
-    });
-  };
+    };
 
-  let res = await makeRequest();
-
-  if (res.status === 401) {
-    try {
-      const refreshRes = await fetch(`${API}/api/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-      });
-
-      if (!refreshRes.ok) {
-        clearAccessToken();
-        return res;
-      }
-
-      const data = await refreshRes.json();
-      setAccessToken(data.accessToken);
-
-      accessToken = data.accessToken;
-      res = await makeRequest();
-    } catch (err) {
-      console.error("Refresh failed:", err);
-      clearAccessToken();
-    }
+    res = await fetch(url, retryConfig);
   }
 
   return res;
