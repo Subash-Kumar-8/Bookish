@@ -24,7 +24,7 @@ const SignIn = () => {
     try {
       const res = await fetch(`${API}/api/auth/login`, {
         method: "POST",
-        credentials: "include", // ✅ IMPORTANT for cookies
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -34,13 +34,8 @@ const SignIn = () => {
       const data = await res.json();
 
       if (res.ok) {
-        // ✅ Store access token in memory
         setAccessToken(data.accessToken);
-
-        // ✅ Set user in context
         setUser(data.user);
-
-        // ❌ DO NOT store token in localStorage anymore
 
         navigate("/");
       } else {
@@ -48,7 +43,7 @@ const SignIn = () => {
       }
     } catch (err) {
       console.error(err);
-      alert("Something went wrong...");
+      alert(err.message);
     }
   };
 
@@ -66,7 +61,6 @@ const SignIn = () => {
         width: "100vw",
       }}
     >
-      {/* HEADER */}
       <div
         className="rounded-5 d-flex align-items-center mb-5"
         style={{
@@ -81,8 +75,6 @@ const SignIn = () => {
         <img src={LOGO} alt="logo" />
         <h1>Bookish</h1>
       </div>
-
-      {/* FORM */}
       <div
         className="rounded-5 d-flex align-items-center flex-column mt-5"
         style={{

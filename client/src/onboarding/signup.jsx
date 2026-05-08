@@ -29,7 +29,6 @@ const SignUp = () => {
         }
 
         try {
-            // ✅ STEP 1: Signup (NO token needed)
             const res = await fetch(`${API}/api/auth/signup`, {
                 method: "POST",
                 credentials: "include",
@@ -45,8 +44,6 @@ const SignUp = () => {
                 alert(data.message || "Signup Failed ❌");
                 return;
             }
-
-            // ✅ STEP 2: Auto login using fetchWithAuth
             const loginRes = await fetchWithAuth(`${API}/api/auth/login`, {
                 method: "POST",
                 body: JSON.stringify({ email, password })
