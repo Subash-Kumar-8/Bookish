@@ -101,7 +101,7 @@ router.post("/refresh", (req, res) => {
 
 router.post("/logout", (req, res) => {
   res.clearCookie("refreshToken", {
-    path: "/api/auth/refresh"
+    path: "/"
   });
 
   res.json({ message: "Logged out" });
@@ -132,7 +132,7 @@ router.delete("/delete", authMiddleware, async (req, res) => {
     await User.findByIdAndDelete(req.user.id);
 
     res.clearCookie("refreshToken", {
-      path: "/api/auth/refresh"
+      path: "/"
     });
 
     res.json({ message: "Account Deleted Successfully" });
