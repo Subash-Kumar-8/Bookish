@@ -1,81 +1,75 @@
-import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import background from "../assets/Onboarding.jpg"
-import LOGO from "../assets/Logo.svg"
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import background from "../assets/Onboarding.jpg";
+import LOGO from "../assets/Logo.svg";
+import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 const SignUp = () => {
     const navigate = useNavigate();
+
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [reenter, setReenter] = useState("");
-    const [visiblePass, setvisiblePass] = useState(false);
+
+    const [visiblePass, setVisiblePass] = useState(false);
     const [visibleRe, setVisibleRe] = useState(false);
+
     const API = import.meta.env.VITE_API_URL;
-    const token = localStorage.getItem("token");
 
     const handleSignUp = async () => {
-      const token = localStorage.getItem("token");
-        if (!name || !email || !password || !reenter){
+        if (!name || !email || !password || !reenter) {
             alert("Please Input All Fields");
             return;
         }
-        if (password !== reenter){
-            alert("Please Re-Enter the same Password");
+
+        if (password !== reenter) {
+            alert("Passwords do not match");
             return;
         }
+
         try {
+            // ✅ STEP 1: Signup (NO token needed)
             const res = await fetch(`${API}/api/auth/signup`, {
                 method: "POST",
                 credentials: "include",
-                  headers: token
-                    ? { Authorization: `Bearer ${token}` }
-                    : {},
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    name,
-                    email, 
-                    password
-                })
+                body: JSON.stringify({ name, email, password })
             });
 
             const data = await res.json();
 
-            if (!res.ok){
+            if (!res.ok) {
                 alert(data.message || "Signup Failed ❌");
                 return;
             }
 
-            const loginRes = await fetch(`${API}/api/auth/login`, {
+            // ✅ STEP 2: Auto login using fetchWithAuth
+            const loginRes = await fetchWithAuth(`${API}/api/auth/login`, {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
-                credentials: "include",
-                  headers: token
-                ? { Authorization: `Bearer ${token}` }
-                : {},
-                body: JSON.stringify({email, password})
+                body: JSON.stringify({ email, password })
             });
-            if(loginRes.ok){
-                alert("Account Created Successfully ✅");
-                navigate("/");
-            } else {
-                alert("Problem with Auto-Sigin. Please Signin!");
+
+            const loginData = await loginRes.json();
+
+            if (!loginRes.ok) {
+                alert("Account created but login failed. Please sign in.");
                 navigate("/signin");
+                return;
             }
-        }catch(err){
-            console.log(err);
+
+            alert("Account Created Successfully ✅");
+            navigate("/");
+
+        } catch (err) {
+            console.error(err);
             alert("Something Went Wrong...");
         }
-    }
-    const togglePass = () => {
-        setvisiblePass(prev => !prev);
-    }
-    const toggleRe = () => {
-        setVisibleRe(prev => !prev);
-    }
-    return(
+    };
+
+    return (
         <div 
             className="container d-flex align-items-center justify-content-start flex-column"
             style={{
@@ -90,13 +84,13 @@ const SignUp = () => {
                     width: "100%",
                     background: "rgba(0, 255, 1, 0.2)",
                     backdropFilter: "blur(10px)",
-                    WebkitBackdropFilter: "blur(10px)",
                     border: "1px solid rgba(255,255,255,0.3)"
                 }}
             >
                 <img src={LOGO} alt="logo" />
                 <h1>Bookish</h1>
             </div>
+
             <div 
                 className="rounded-5 d-flex align-items-center flex-column"
                 style={{
@@ -104,61 +98,71 @@ const SignUp = () => {
                     height: "500px",
                     background: "rgba(255, 255, 255, 0.15)",
                     backdropFilter: "blur(10px)",
-                    WebkitBackdropFilter: "blur(10px)", 
                     border: "1px solid rgba(255, 255, 255, 0.3)"
                 }}
             >
-                <label htmlFor="Name" className="form-label mt-5">Name</label>
+                <label className="form-label mt-5">Name</label>
                 <input 
-                    type="text" 
-                    className="form-control mt-2" 
-                    style={{width: "300px"}} 
-                    placeholder="Enter Your Name"
-                    onChange={(e)=>setName(e.target.value)}
+                    type="text"
+                    className="form-control mt-2"
+                    style={{ width: "300px" }}
+                    onChange={(e) => setName(e.target.value)}
                 />
-                <label htmlFor="Mail" className="form-label mt-2">Email</label>
+
+                <label className="form-label mt-2">Email</label>
                 <input 
-                    type="text" 
-                    className="form-control mt-2" 
-                    style={{width: "300px"}} 
-                    placeholder="Enter Your E-Mail ID"
-                    onChange={(e)=>setEmail(e.target.value)}
+                    type="text"
+                    className="form-control mt-2"
+                    style={{ width: "300px" }}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
-                <label htmlFor="password" className="form-label mt-2">Password</label>
+
+                <label className="form-label mt-2">Password</label>
                 <div className="d-flex">
                     <input 
-                        type={visiblePass ? "text" : "password"} 
-                        className="form-control mt-2" 
-                        style={{width: "300px"}} 
-                        placeholder="Enter Password"
-                        onChange={(e)=>setPassword(e.target.value)}
+                        type={visiblePass ? "text" : "password"}
+                        className="form-control mt-2"
+                        style={{ width: "300px" }}
+                        onChange={(e) => setPassword(e.target.value)}
                     />
                     <i 
-                        className={visiblePass ? "bi bi-eye-slash" : "bi bi-eye"} 
-                        size={22}
-                        onClick={()=>togglePass()}
+                        className={visiblePass ? "bi bi-eye-slash" : "bi bi-eye"}
+                        onClick={() => setVisiblePass(prev => !prev)}
+                        style={{ cursor: "pointer" }}
                     ></i>
                 </div>
-                <label htmlFor="reenter" className="form-label mt-2">Re-Enter Password</label>
+
+                <label className="form-label mt-2">Re-Enter Password</label>
                 <div className="d-flex">
                     <input 
                         type={visibleRe ? "text" : "password"}
-                        className="form-control mt-2" 
-                        style={{width: "300px"}} 
-                        placeholder="Re-Enter the same Password"
-                        onChange={(e)=>setReenter(e.target.value)}
+                        className="form-control mt-2"
+                        style={{ width: "300px" }}
+                        onChange={(e) => setReenter(e.target.value)}
                     />
                     <i 
-                        className={visibleRe ? "bi bi-eye-slash" : "bi bi-eye"} 
-                        size={22}
-                        onClick={()=>toggleRe()}
+                        className={visibleRe ? "bi bi-eye-slash" : "bi bi-eye"}
+                        onClick={() => setVisibleRe(prev => !prev)}
+                        style={{ cursor: "pointer" }}
                     ></i>
                 </div>
-                <p className="mt-2">Already Have an Account? <Link to ="/signin" className="link-success">Sign In</Link></p>
-                <button className="btn btn-success" onClick={()=>handleSignUp()}>Create Account</button>
+
+                <p className="mt-2">
+                    Already Have an Account?{" "}
+                    <Link to="/signin" className="link-success">
+                        Sign In
+                    </Link>
+                </p>
+
+                <button 
+                    className="btn btn-success"
+                    onClick={handleSignUp}
+                >
+                    Create Account
+                </button>
             </div>
         </div>
     );
-}
+};
 
 export default SignUp;

@@ -9,7 +9,6 @@ import { authMiddleware } from "./middleware/authMiddleware.js";
 import rateLimit from "express-rate-limit";
 
 const app = express()
-app.set("trust proxy", 1);
 
 dotenv.config();
 
@@ -21,6 +20,7 @@ app.use(cors({
   origin: ["http://localhost:5173", "https://bookish-five.vercel.app"], 
   credentials: true
 }));
+app.set("trust proxy", 1);
 app.use(express.json());
 app.use(cookieParser())
 app.use("/api/auth", authRoutes);

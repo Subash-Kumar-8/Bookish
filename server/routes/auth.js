@@ -5,30 +5,46 @@ import User from "../models/user.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
-const isproduction = process.env.NODE_ENV === "production"
+
+const createAccessToken = (user) => {
+  return jwt.sign(
+    { id: user._id },
+    process.env.JWT_SECRET,
+    { expiresIn: "15m" } // short-lived
+  );
+};
+
+const createRefreshToken = (user) => {
+  return jwt.sign(
+    { id: user._id },
+    process.env.JWT_REFRESH_SECRET,
+    { expiresIn: "7d" } // long-lived
+  );
+};
 
 router.post("/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
+
     const existing = await User.findOne({ email });
-    if(existing){
-      return res.status(400).json({message: "User Already Exists"});
+    if (existing) {
+      return res.status(400).json({ message: "User Already Exists" });
     }
 
     const hashed = await bcrypt.hash(password, 10);
 
-    const user = await User.create({
+    await User.create({
       name,
       email,
       password: hashed
-  });
+    });
 
-  res.json({ message: "User created" });
-  } catch(err){
+    res.json({ message: "User created" });
+
+  } catch (err) {
     console.error(err);
-    res.status(500).json({message: "Server Error"});
+    res.status(500).json({ message: "Server Error" });
   }
-  
 });
 
 router.post("/login", async (req, res) => {
@@ -40,29 +56,54 @@ router.post("/login", async (req, res) => {
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) return res.status(400).json({ message: "Invalid password" });
 
-  const token = jwt.sign(
-    { id: user._id },
-    process.env.JWT_SECRET,
-    { expiresIn: "1d" }
-  );
+  const accessToken = createAccessToken(user);
+  const refreshToken = createRefreshToken(user);
 
-  res.cookie("token", token, {
+  res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
     secure: true,
-    sameSite: "none"
+    sameSite: "none",
+    path: "/api/auth/refresh"
   });
 
   res.json({
+    accessToken,
     user: {
       id: user._id,
       name: user.name,
       email: user.email
-    }, token
+    }
   });
 });
 
+router.post("/refresh", (req, res) => {
+  const token = req.cookies.refreshToken;
+
+  if (!token) {
+    return res.status(401).json({ message: "No refresh token" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+
+    const accessToken = jwt.sign(
+      { id: decoded.id },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    res.json({ accessToken });
+
+  } catch (err) {
+    return res.status(403).json({ message: "Invalid refresh token" });
+  }
+});
+
 router.post("/logout", (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("refreshToken", {
+    path: "/api/auth/refresh"
+  });
+
   res.json({ message: "Logged out" });
 });
 
@@ -74,21 +115,31 @@ router.get("/me", authMiddleware, async (req, res) => {
 router.delete("/delete", authMiddleware, async (req, res) => {
   try {
     const { password } = req.body;
+
     if (!password)
-      return res.status(400).json({message: "Password is required"});
-    const userId = req.user.id;
-    const user = await User.findById(userId);
+      return res.status(400).json({ message: "Password is required" });
+
+    const user = await User.findById(req.user.id);
+
     if (!user)
-      return res.status(404).json({message: "User Not Found"});
+      return res.status(404).json({ message: "User Not Found" });
+
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch)
-      return res.status(400).json({message: "Incorrect Password"});
-    await User.findByIdAndDelete(userId);
-    res.clearCookie("token");
-    res.json({message: "Account Deleted Successfully"});
+      return res.status(400).json({ message: "Incorrect Password" });
+
+    await User.findByIdAndDelete(req.user.id);
+
+    res.clearCookie("refreshToken", {
+      path: "/api/auth/refresh"
+    });
+
+    res.json({ message: "Account Deleted Successfully" });
+
   } catch (err) {
     console.log(err);
-    res.status(500).json({message: "Server Error"});
+    res.status(500).json({ message: "Server Error" });
   }
 });
 

@@ -1,45 +1,40 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const API = import.meta.env.VITE_API_URL;
 
-    const fetchUser = async () => {
-        try {
-            const API = import.meta.env.VITE_API_URL;
-            const token = localStorage.getItem("token");
-            const res = await fetch(`${API}/api/auth/me`, {
-                credentials: "include",
-                headers: {
-                    ...(token && { Authorization: `Bearer ${token}` })
-                }
-            });
+  const fetchUser = async () => {
+    try {
+      const res = await fetchWithAuth(`${API}/api/auth/me`);
 
-            if (res.ok) {
-                const data = await res.json();
-                setUser(data.user);
-            } else {
-                setUser(null);
-            }
-        } catch (err) {
-            console.log(err);
-            setUser(null);
-        } finally {
-            setLoading(false);
-        }
-    };
+      if (res.ok) {
+        const data = await res.json();
+        setUser(data.user);
+      } else {
+        setUser(null);
+      }
+    } catch (err) {
+      console.log(err);
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    useEffect(() => {
-        fetchUser();
-    }, []);
+  useEffect(() => {
+    fetchUser();
+  }, []);
 
-    return (
-        <AuthContext.Provider value={{ user, setUser, loading }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  return (
+    <AuthContext.Provider value={{ user, setUser, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => useContext(AuthContext);

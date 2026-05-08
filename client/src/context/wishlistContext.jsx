@@ -1,28 +1,30 @@
 import { createContext, useState, useEffect } from "react";
+import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 export const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
-
   const API = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchWishlist = async () => {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`${API}/api/wishlist`, {
-        credentials: "include",
-          headers: token
-            ? { Authorization: `Bearer ${token}` }
-            : {}
-      });
-      if (!res.ok) {
-        setWishlist([]);
-        return;
-      }
+      try {
+        const res = await fetchWithAuth(`${API}/api/wishlist`);
 
-      const data = await res.json();
-      setWishlist(data);
+        if (!res.ok) {
+          setWishlist([]);
+          return;
+        }
+
+        const data = await res.json();
+        setWishlist(data);
+      } catch (err) {
+        console.error(err);
+        setWishlist([]);
+      }
     };
+
     fetchWishlist();
   }, []);
 
