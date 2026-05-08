@@ -28,7 +28,10 @@ app.use("/api/auth", authRoutes);
 const limiter = rateLimit({
   windowMs: 15*60*1000,
   max: 100,
-  message: "Too many requests, try again later"
+  message: "Too many requests, try again later",
+  skip: (req) => {
+    return req.path === "/";
+  }
 });
 
 app.use(limiter);
