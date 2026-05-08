@@ -63,7 +63,7 @@ router.post("/login", async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "none",
-    path: "/api/auth/refresh"
+    path: "/"
   });
 
   res.json({
