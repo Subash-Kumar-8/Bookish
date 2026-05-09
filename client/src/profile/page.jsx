@@ -40,11 +40,50 @@ const Profile = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div>
-      <h2>{user?.name}</h2>
-
-      <button onClick={handleLogout}>Logout</button>
-      <button onClick={handleDeleteAccount}>Delete</button>
+    <div className="container">
+      <div 
+        className="rounded-top-5 bg-warning d-flex align-items-center justify-content-between px-5"
+        style={{height: "170px"}}
+      >
+        <div className="gap-5 d-flex">
+          <div 
+            className="rounded-circle bg-light d-flex justify-content-center align-items-center"
+            style={{height: "100px", width: "100px"}}
+          >
+            <h1>{user?.name.charAt(0)}</h1>
+          </div>
+          <div className="d-flex flex-column">
+            <h2>{user?.name}</h2>
+            <h3>{user?.email}</h3>
+          </div>
+        </div>
+        
+        <div className="text-danger">
+          <i 
+            className="bi bi-box-arrow-right"
+            onClick={handleLogout}
+          ></i>
+        </div>
+        
+      </div>
+      <div 
+        className="rounded-bottom-5 bg-secondary-subtle d-flex justify-content-around align-items-center"
+        style={{height: "60px"}}
+      >
+        <button
+          className="btn btn-info"
+          onClick={()=>navigate('/wishlist')}
+        >
+          Go to Wishlist Page
+        </button>
+        <button
+        className="btn btn-danger"
+          onClick={handleDeleteAccount}
+        >
+          Delete
+        </button>
+      </div>
+      
     </div>
   );
 };

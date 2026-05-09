@@ -3,12 +3,16 @@ import { getWishlist, removeWishlist } from "../utils/wishlist";
 import "../Search/search.css";
 import { useNavigate } from "react-router-dom";
 import NoImage from "../assets/NoImage.png";
+import { useAuth } from "../context/authContext";
 
 const Wishlist = () => {
   const [books, setBooks] = useState([]);
   const navigate = useNavigate();
+  const {loading, user} = useAuth();
 
   useEffect(() => {
+    if (loading || !user) return;
+
     const fetchData = async () => {
       const data = await getWishlist();
       console.log("FRONTEND DATA:", data);
@@ -16,7 +20,7 @@ const Wishlist = () => {
     };
 
     fetchData();
-  }, []);
+  }, [loading, user]);
 
   const handleRemove = async (e, id) => {
     e.stopPropagation();

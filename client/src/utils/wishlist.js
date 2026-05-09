@@ -16,6 +16,9 @@ export const addWishlist = async (book) => {
   try {
     const res = await fetchWithAuth("/api/wishlist", {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
         bookId: book.id,
         title: book.volumeInfo.title,
@@ -35,7 +38,7 @@ export const addWishlist = async (book) => {
 
 export const removeWishlist = async (id) => {
   try {
-    const res = await fetchWithAuth("/api/wishlist/${id}", {
+    const res = await fetchWithAuth(`/api/wishlist/${id}`, {
       method: "DELETE",
     });
 

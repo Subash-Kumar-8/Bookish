@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "./style.css";
 import { useNavigate } from "react-router-dom";
 import { getHomeBooks } from "../services/api";
+import NOIMG from "../assets/NoImage.png"
 
 const fictGen = [
   { index: 1, name: "Fiction", img: "/Fiction.avif" },
@@ -115,7 +116,7 @@ const Home = () => {
                   <img
                     src={
                       book.volumeInfo.imageLinks?.thumbnail.replace("http://", "https://") ||
-                      "https://via.placeholder.com/150"
+                      {NOIMG}
                     }
                     className="card-img-top"
                     alt={book.volumeInfo.title}

@@ -6,12 +6,12 @@ export const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
 
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
-        if (loading) return;
+        if (loading || !user) return;
         const res = await fetchWithAuth("/api/wishlist");
 
         if (!res.ok) {

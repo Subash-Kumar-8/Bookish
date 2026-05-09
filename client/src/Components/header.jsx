@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { getWishlist } from '../utils/wishlist.js';
 import { useAuth } from '../context/authContext.jsx';
+import { useCallback } from 'react';
 
 const Header = () => {
     const navigate = useNavigate();
@@ -16,25 +17,27 @@ const Header = () => {
         navigate(`/search?q=${query}`);
     };
 
-    const fetchCount = async () => {
+    const fetchCount = useCallback(async () => {
+        if(!user) return;
+
         try {
             const data = await getWishlist();
             setWishlistCnt(data.length);
         } catch (err) {
             console.error("Wishlist fetch error:", err);
         }
-    };
+    }, [user]);
 
     useEffect(() => {
+        if(loading || !user) return;
         fetchCount();
-    }, []);
+    }, [loading, user]);
 
     useEffect(() => {
+        if(!user) return;
         window.addEventListener("wishlistUpdated", fetchCount);
         return () => window.removeEventListener("wishlistUpdated", fetchCount);
-    }, []);
-
-    if (loading) return <p>Loading...</p>;
+    }, [user]);
 
     return (
         <div className="text-bg-success p-3 d-flex align-items-center gap-3 mb-3">
@@ -44,15 +47,9 @@ const Header = () => {
                 style={{ width: "75px", cursor: 'pointer' }}
                 onClick={() => navigate('/')}
             />
-            {user ? (
-                <h3 className="text-white m-0">
-                    Welcome, {user.name}
-                </h3>
-            ) : (
-                <h1 className="text-white m-0">
-                    Not Logged In
-                </h1>
-            )}
+           <h3 className="text-white m-0">
+                {loading ? "Loading..." : user ? `Welcome, ${user.name}` : "Not Logged In"}
+            </h3>
             <div className="input-group" style={{ width: "600px" }}>
                 <input
                     type="text"

@@ -14,12 +14,12 @@ const Search = () => {
 
   const query = searchParams.get("q");
   const subject = searchParams.get("subject")?.toUpperCase() || null;
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
 
   useEffect(() => {
     const loadWishlist = async () => {
       try {
-        if (loading) return;
+        if (loading || !user) return;
         const res = await fetchWithAuth("/api/wishlist");
         if (!res.ok) return;
 
@@ -31,7 +31,7 @@ const Search = () => {
     };
 
     loadWishlist();
-  }, [loading]);
+  }, [loading, user]);
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -72,6 +72,7 @@ const Search = () => {
                 <h6>{book.volumeInfo.title}</h6>
 
                 <button
+                  className="btn btn-dark"
                   onClick={async (e) => {
                     e.stopPropagation();
 
