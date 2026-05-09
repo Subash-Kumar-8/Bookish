@@ -6,7 +6,7 @@ const refreshAccessToken = async () => {
   try {
     const res = await fetch(`${API}/api/auth/refresh`, {
       method: "POST",
-      credentials: "include", // 🔥 required for cookie
+      credentials: "include",
     });
 
     if (!res.ok) throw new Error("Refresh failed");

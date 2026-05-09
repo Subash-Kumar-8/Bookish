@@ -17,7 +17,7 @@ const SignUp = () => {
 
     const API = import.meta.env.VITE_API_URL;
 
-    const handleSignUp = async () => {
+   const handleSignUp = async () => {
         if (!name || !email || !password || !reenter) {
             alert("Please Input All Fields");
             return;
@@ -29,8 +29,9 @@ const SignUp = () => {
         }
 
         try {
-            const res = await fetchWithAuth(`${API}/api/auth/signup`, {
+            const res = await fetch(`${API}/api/auth/signup`, {
                 method: "POST",
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json"
                 },
@@ -43,8 +44,13 @@ const SignUp = () => {
                 alert(data.message || "Signup Failed ❌");
                 return;
             }
-            const loginRes = await fetchWithAuth(`${API}/api/auth/login`, {
+
+            const loginRes = await fetch(`${API}/api/auth/login`, {
                 method: "POST",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json"
+                },
                 body: JSON.stringify({ email, password })
             });
 
@@ -55,6 +61,9 @@ const SignUp = () => {
                 navigate("/signin");
                 return;
             }
+
+            setAccessToken(loginData.accessToken);
+            setUser(loginData.user);
 
             alert("Account Created Successfully ✅");
             navigate("/");

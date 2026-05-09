@@ -15,16 +15,34 @@ import SignUp from "./onboarding/signup.jsx";
 import SignIn from "./onboarding/signin.jsx";
 import ProtectedRoute from './Components/protectedRoute.jsx';
 import { fetchWithAuth } from './utils/fetchWithAuth.js';
+import { useAuth } from "./context/authContext";
+import { setAccessToken } from "./utils/tokenStore";
 
 const App = () => {
+  const { setUser } = useAuth();
   const location = useLocation();
   const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetchWithAuth(`${API}/api`)
-      .then(res => res.text())
-      .then(data => console.log(data))
-      .catch(err => console.error("Error: ", err));
+    const initAuth = async () => {
+      try {
+        const res = await fetch(`${API}/api/auth/refresh`, {
+          method: "POST",
+          credentials: "include",
+        });
+
+        if (!res.ok) throw new Error("Not authenticated");
+
+        const data = await res.json();
+
+        setAccessToken(data.accessToken);
+        setUser(data.user);
+      } catch (err) {
+        setUser(null);
+      }
+    };
+
+    initAuth();
   }, []);
   
   const hideLayout = ["/signin", "/signup"].includes(location.pathname);

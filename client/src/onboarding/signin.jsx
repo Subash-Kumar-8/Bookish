@@ -23,8 +23,9 @@ const SignIn = () => {
     }
 
     try {
-      const res = await fetchWithAuth(`${API}/api/auth/login`, {
+      const res = await fetch(`${API}/api/auth/login`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
