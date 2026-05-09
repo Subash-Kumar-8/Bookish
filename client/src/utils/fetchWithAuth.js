@@ -1,10 +1,8 @@
 import { getAccessToken, setAccessToken, clearAccessToken } from "./tokenStore";
 
-const API = import.meta.env.VITE_API_URL;
-
 const refreshAccessToken = async () => {
   try {
-    const res = await fetch(`${API}/api/auth/refresh`, {
+    const res = await fetch("/api/auth/refresh", {
       method: "POST",
       credentials: "include",
     });

@@ -14,8 +14,6 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [visible, setVisible] = useState(false);
 
-  const API = import.meta.env.VITE_API_URL;
-
   const handleSignIn = async () => {
     if (!email || !password) {
       alert("Please Input All Fields!");
@@ -23,7 +21,7 @@ const SignIn = () => {
     }
 
     try {
-      const res = await fetch(`${API}/api/auth/login`, {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         credentials: "include",
         headers: {

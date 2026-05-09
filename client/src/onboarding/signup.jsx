@@ -15,8 +15,6 @@ const SignUp = () => {
     const [visiblePass, setVisiblePass] = useState(false);
     const [visibleRe, setVisibleRe] = useState(false);
 
-    const API = import.meta.env.VITE_API_URL;
-
    const handleSignUp = async () => {
         if (!name || !email || !password || !reenter) {
             alert("Please Input All Fields");
@@ -29,7 +27,7 @@ const SignUp = () => {
         }
 
         try {
-            const res = await fetch(`${API}/api/auth/signup`, {
+            const res = await fetch("/api/auth/signup", {
                 method: "POST",
                 credentials: "include",
                 headers: {
@@ -45,7 +43,7 @@ const SignUp = () => {
                 return;
             }
 
-            const loginRes = await fetch(`${API}/api/auth/login`, {
+            const loginRes = await fetch("/api/auth/login", {
                 method: "POST",
                 credentials: "include",
                 headers: {

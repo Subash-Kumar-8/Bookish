@@ -21,12 +21,11 @@ import { setAccessToken } from "./utils/tokenStore";
 const App = () => {
   const { setUser } = useAuth();
   const location = useLocation();
-  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const res = await fetch(`${API}/api/auth/refresh`, {
+        const res = await fetch("/api/auth/refresh", {
           method: "POST",
           credentials: "include",
         });
