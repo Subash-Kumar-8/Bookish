@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://bookish-42eo.onrender.com/api/:path*"
+    }
+  ]
+}

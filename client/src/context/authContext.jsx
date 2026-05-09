@@ -6,11 +6,10 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const API = import.meta.env.VITE_API_URL;
 
   const fetchUser = async () => {
     try {
-      const res = await fetchWithAuth(`${API}/api/auth/me`);
+      const res = await fetchWithAuth("/api/auth/me");
 
       if (res.ok) {
         const data = await res.json();

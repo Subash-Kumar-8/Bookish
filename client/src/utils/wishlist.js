@@ -1,10 +1,9 @@
 import { fetchWithAuth } from "./fetchWithAuth";
 
-const API = import.meta.env.VITE_API_URL;
 
 export const getWishlist = async () => {
   try {
-    const res = await fetchWithAuth(`${API}/api/wishlist`);
+    const res = await fetchWithAuth("/api/wishlist");
     if (!res.ok) return [];
     return await res.json();
   } catch (err) {
@@ -15,7 +14,7 @@ export const getWishlist = async () => {
 
 export const addWishlist = async (book) => {
   try {
-    const res = await fetchWithAuth(`${API}/api/wishlist`, {
+    const res = await fetchWithAuth("/api/wishlist", {
       method: "POST",
       body: JSON.stringify({
         bookId: book.id,
@@ -36,7 +35,7 @@ export const addWishlist = async (book) => {
 
 export const removeWishlist = async (id) => {
   try {
-    const res = await fetchWithAuth(`${API}/api/wishlist/${id}`, {
+    const res = await fetchWithAuth("/api/wishlist/${id}", {
       method: "DELETE",
     });
 
