@@ -17,8 +17,10 @@ mongoose.connect(process.env.MONGO_URI)
 .catch((err) => (console.error(err)));
 
 app.use(cors({
-  origin: ["http://localhost:5173", "https://bookish-five.vercel.app"], 
-  credentials: true
+  origin: ["https://bookish-five.vercel.app"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.set("trust proxy", 1);
 app.use(express.json());

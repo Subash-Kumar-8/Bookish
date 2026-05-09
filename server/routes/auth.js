@@ -76,7 +76,7 @@ router.post("/login", async (req, res) => {
   });
 });
 
-router.post("/refresh", (req, res) => {
+router.post("/refresh", async (req, res) => {
   const token = req.cookies.refreshToken;
 
   if (!token) {
@@ -86,13 +86,18 @@ router.post("/refresh", (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
 
+    const user = await User.findById(decoded.id).select("-password");
+
     const accessToken = jwt.sign(
       { id: decoded.id },
       process.env.JWT_SECRET,
       { expiresIn: "15m" }
     );
 
-    res.json({ accessToken });
+    res.json({
+      accessToken,
+      user
+    });
 
   } catch (err) {
     return res.status(403).json({ message: "Invalid refresh token" });
