@@ -119,7 +119,7 @@ router.get("/me", authMiddleware, async (req, res) => {
 
 router.delete("/delete", authMiddleware, async (req, res) => {
   try {
-    const { password } = req.body;
+    const password = req.body?.password;
 
     if (!password)
       return res.status(400).json({ message: "Password is required" });
@@ -144,7 +144,7 @@ router.delete("/delete", authMiddleware, async (req, res) => {
 
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: err.message });
   }
 });
 

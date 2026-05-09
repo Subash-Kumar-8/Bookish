@@ -95,7 +95,7 @@ const SignIn = () => {
         />
 
         <label className="form-label mt-2">Password</label>
-        <div className="d-flex">
+        <div className="d-flex align-items-center">
           <input
             type={visible ? "text" : "password"}
             className="form-control mt-2"

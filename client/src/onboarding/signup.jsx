@@ -107,6 +107,7 @@ const SignUp = () => {
                 <label className="form-label mt-5">Name</label>
                 <input 
                     type="text"
+                    placeholder="Enter Your Name"
                     className="form-control mt-2"
                     style={{ width: "300px" }}
                     onChange={(e) => setName(e.target.value)}
@@ -115,15 +116,17 @@ const SignUp = () => {
                 <label className="form-label mt-2">Email</label>
                 <input 
                     type="text"
+                    placeholder="Enter Your E-mail"
                     className="form-control mt-2"
                     style={{ width: "300px" }}
                     onChange={(e) => setEmail(e.target.value)}
                 />
 
                 <label className="form-label mt-2">Password</label>
-                <div className="d-flex">
+                <div className="d-flex align-items-center">
                     <input 
                         type={visiblePass ? "text" : "password"}
+                        placeholder="Enter Your Password"
                         className="form-control mt-2"
                         style={{ width: "300px" }}
                         onChange={(e) => setPassword(e.target.value)}
@@ -136,9 +139,10 @@ const SignUp = () => {
                 </div>
 
                 <label className="form-label mt-2">Re-Enter Password</label>
-                <div className="d-flex">
+                <div className="d-flex align-items-center">
                     <input 
                         type={visibleRe ? "text" : "password"}
+                        placeholder="Re-Enter the same Password"
                         className="form-control mt-2"
                         style={{ width: "300px" }}
                         onChange={(e) => setReenter(e.target.value)}
