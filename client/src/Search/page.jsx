@@ -4,6 +4,7 @@ import { searchBooks } from "../services/api";
 import { addWishlist, removeWishlist } from "../utils/wishlist";
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 import NoImage from "../assets/NoImage.png";
+import { useAuth } from "../context/authContext";
 
 const Search = () => {
   const navigate = useNavigate();
@@ -13,10 +14,12 @@ const Search = () => {
 
   const query = searchParams.get("q");
   const subject = searchParams.get("subject")?.toUpperCase() || null;
+  const { loading } = useAuth();
 
   useEffect(() => {
     const loadWishlist = async () => {
       try {
+        if (loading) return;
         const res = await fetchWithAuth("/api/wishlist");
         if (!res.ok) return;
 
@@ -28,7 +31,7 @@ const Search = () => {
     };
 
     loadWishlist();
-  }, []);
+  }, [loading]);
 
   useEffect(() => {
     const fetchBooks = async () => {

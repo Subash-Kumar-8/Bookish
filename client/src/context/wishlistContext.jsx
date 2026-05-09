@@ -1,14 +1,17 @@
 import { createContext, useState, useEffect } from "react";
 import { fetchWithAuth } from "../utils/fetchWithAuth";
+import { useAuth } from "./authContext";
 
 export const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
+  const { loading } = useAuth();
 
   useEffect(() => {
     const fetchWishlist = async () => {
       try {
+        if (loading) return;
         const res = await fetchWithAuth("/api/wishlist");
 
         if (!res.ok) {
@@ -25,7 +28,7 @@ export const WishlistProvider = ({ children }) => {
     };
 
     fetchWishlist();
-  }, []);
+  }, [loading]);
 
   return (
     <WishlistContext.Provider value={{ wishlist, setWishlist }}>

@@ -30,7 +30,7 @@ const App = () => {
           credentials: "include",
         });
 
-        if (!res.ok) throw new Error("Not authenticated");
+        if (!res.ok) throw new Error("Not logged in");
 
         const data = await res.json();
 

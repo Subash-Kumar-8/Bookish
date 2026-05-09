@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { fetchWithAuth } from "../utils/fetchWithAuth";
+import { setAccessToken, clearAccessToken } from "../utils/tokenStore";
 
 const AuthContext = createContext();
 
@@ -7,18 +7,34 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchUser = async () => {
+  const initAuth = async () => {
     try {
-      const res = await fetchWithAuth("/api/auth/me");
+      const refreshRes = await fetch("/api/auth/refresh", {
+        method: "POST",
+        credentials: "include",
+      });
 
-      if (res.ok) {
-        const data = await res.json();
-        setUser(data.user);
-      } else {
-        setUser(null);
-      }
+      if (!refreshRes.ok) throw new Error("Not authenticated");
+
+      const refreshData = await refreshRes.json();
+
+      setAccessToken(refreshData.accessToken);
+
+      const userRes = await fetch("/api/auth/me", {
+        headers: {
+          Authorization: `Bearer ${refreshData.accessToken}`,
+        },
+        credentials: "include",
+      });
+
+      if (!userRes.ok) throw new Error("Failed to fetch user");
+
+      const userData = await userRes.json();
+
+      setUser(userData.user);
+
     } catch (err) {
-      console.log(err);
+      clearAccessToken();
       setUser(null);
     } finally {
       setLoading(false);
@@ -26,7 +42,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchUser();
+    initAuth();
   }, []);
 
   return (
