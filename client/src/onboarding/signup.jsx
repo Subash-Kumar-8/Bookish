@@ -2,11 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import background from "../assets/Onboarding.jpg";
 import LOGO from "../assets/Logo.svg";
-import { fetchWithAuth } from "../utils/fetchWithAuth";
+import { setAccessToken } from "../utils/tokenStore";
+import { useAuth } from "../context/authContext";
 
 const SignUp = () => {
     const navigate = useNavigate();
-
+    const { setUser } = useAuth();
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -68,7 +69,7 @@ const SignUp = () => {
 
         } catch (err) {
             console.error(err);
-            alert("Something Went Wrong...");
+            alert(err.message);
         }
     };
 
