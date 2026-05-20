@@ -45,7 +45,7 @@ const BookDetails = () => {
     (id) => id.type === "ISBN_13" || id.type === "ISBN_10"
   )?.identifier;
 
-  const AMAZON_TAG = "yourtag-21";
+  const AMAZON_TAG = "skdeveloper-21";
 
   const amazonLink = isbn
     ? `https://www.amazon.in/dp/${isbn}?tag=${AMAZON_TAG}`
@@ -88,7 +88,7 @@ const BookDetails = () => {
               <a
                 href={info.previewLink}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer sponsored"
                 className="btn btn-primary"
               >
                 Read via Google Books 📖
@@ -98,7 +98,7 @@ const BookDetails = () => {
             <a
               href={amazonLink}
               target="_blank"
-              rel="noreferrer sponsored"
+              rel="noopener noreferrer sponsored"
               className="btn btn-dark"
             >
               Buy via Amazon 🛒
