@@ -10,6 +10,16 @@ const Header = () => {
     const [query, setQuery] = useState("");
     const [wishlistCnt, setWishlistCnt] = useState(0);
     const [showMenu, setShowMenu] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     const { user, loading } = useAuth();
 
@@ -48,8 +58,8 @@ const Header = () => {
                 style={{ width: "75px", cursor: 'pointer' }}
                 onClick={() => navigate('/')}
             />
-           <h3 className="text-white m-0">
-                {loading ? "Loading..." : user ? `Welcome, ${user.name}` : "Not Logged In"}
+           <h3 className="text-white m-0 text-truncate" style={{ minWidth: 0 }}>
+                {loading ? "Loading..." : user ? isMobile ? user.name : `Welcome, ${user.name}` : "Not Logged In"}
             </h3>
             <div 
                 className="input-group flex-grow-1" 
@@ -79,12 +89,9 @@ const Header = () => {
             <div className="ms-3">
                 <button
                     className="btn btn-outline-light d-lg-none"
-                    onClick={()=>setShowMenu(!showMenu)}
-                    type="button"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#headerNav"
+                    onClick={() => setShowMenu(!showMenu)}
                 >
-                    <span className="bi bi-list"></span>
+                    <i className="bi bi-list"></i>
                 </button>
 
                 <div className={`${showMenu ? "d-block" : "d-none"} d-lg-block`}>
@@ -107,32 +114,70 @@ const Header = () => {
                             </Link>
                         </li>
                     </ul>
-                    <div
-                        className="bg-warning text-danger rounded-pill px-3 py-1 ms-auto"
-                        onClick={() => navigate("/wishlist")}
-                        style={{ cursor: "pointer" }}
-                    >
-                        ❤️ {wishlistCnt || 0}
-                    </div>
+                    {showMenu && (
+                        <div className="d-lg-none mt-3">
+                            <div
+                                className="bg-warning text-danger rounded-pill px-3 py-1 mb-3"
+                                onClick={() => navigate("/wishlist")}
+                                style={{ cursor: "pointer", width: "fit-content" }}
+                            >
+                                ❤️ {wishlistCnt}
+                            </div>
+
+                            {user ? (
+                                <div
+                                    className="text-dark bg-light rounded-circle d-flex justify-content-center align-items-center"
+                                    style={{
+                                        height: "60px",
+                                        width: "60px",
+                                        cursor: "pointer"
+                                    }}
+                                    onClick={() => navigate("/profile")}
+                                >
+                                    <h1>{user.name.charAt(0).toUpperCase()}</h1>
+                                </div>
+                            ) : (
+                                <button
+                                    className="btn btn-light"
+                                    onClick={() => navigate("/signin")}
+                                >
+                                    Sign In
+                                </button>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
-            {user ? (
+            <div className="d-none d-lg-flex align-items-center gap-3">
                 <div
-                    className="text-dark bg-light rounded-circle d-flex justify-content-center align-items-center"
-                    style={{ height: "60px", width: "60px", cursor: "pointer" }}
-                    onClick={() => navigate('/profile')}
+                    className="bg-warning text-danger rounded-pill px-3 py-1"
+                    onClick={() => navigate("/wishlist")}
+                    style={{ cursor: "pointer" }}
                 >
-                    <h1>{user?.name?.charAt(0)?.toUpperCase()}</h1>
+                    ❤️ {wishlistCnt}
                 </div>
-            ) : (
-                <button
-                    className="btn btn-light"
-                    onClick={() => navigate('/signin')}
-                >
-                    Sign In
-                </button>
-            )}
 
+                {user ? (
+                    <div
+                        className="text-dark bg-light rounded-circle d-flex justify-content-center align-items-center"
+                        style={{
+                            height: "60px",
+                            width: "60px",
+                            cursor: "pointer"
+                        }}
+                        onClick={() => navigate("/profile")}
+                    >
+                        <h1>{user.name.charAt(0).toUpperCase()}</h1>
+                    </div>
+                ) : (
+                    <button
+                        className="btn btn-light"
+                        onClick={() => navigate("/signin")}
+                    >
+                        Sign In
+                    </button>
+                )}
+            </div>
         </div>
     );
 };
