@@ -9,6 +9,7 @@ const Header = () => {
     const navigate = useNavigate();
     const [query, setQuery] = useState("");
     const [wishlistCnt, setWishlistCnt] = useState(0);
+    const [showMenu, setShowMenu] = useState(false);
 
     const { user, loading } = useAuth();
 
@@ -40,7 +41,7 @@ const Header = () => {
     }, [user]);
 
     return (
-        <div className="text-bg-success p-3 d-flex align-items-center gap-3 mb-3">
+        <div className="container text-bg-success p-3 d-flex align-items-center gap-3 mb-3">
             <img
                 src={Logo}
                 alt="Logo"
@@ -50,7 +51,13 @@ const Header = () => {
            <h3 className="text-white m-0">
                 {loading ? "Loading..." : user ? `Welcome, ${user.name}` : "Not Logged In"}
             </h3>
-            <div className="input-group" style={{ width: "600px" }}>
+            <div 
+                className="input-group flex-grow-1" 
+                style={{
+                    flex: "1 1 250px",
+                    minWidth: 0
+                }}
+            >
                 <input
                     type="text"
                     className="form-control bg-transparent border-light text-white"
@@ -69,25 +76,45 @@ const Header = () => {
                     <i className="bi bi-search"></i>
                 </span>
             </div>
-            <div>
-                <ul className="nav">
-                    <li className="nav-item">
-                        <Link to="/about" className="nav-link">About</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/contact" className="nav-link">Contact</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link to="/privacy-policy" className="nav-link">Privacy Policy</Link>
-                    </li>
-                </ul>
-            </div>
-            <div
-                className="bg-warning text-danger rounded-pill px-3 py-1 ms-auto"
-                onClick={() => navigate("/wishlist")}
-                style={{ cursor: "pointer" }}
-            >
-                ❤️ {wishlistCnt || 0}
+            <div className="ms-3">
+                <button
+                    className="btn btn-outline-light d-lg-none"
+                    onClick={()=>setShowMenu(!showMenu)}
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#headerNav"
+                >
+                    <span className="bi bi-list"></span>
+                </button>
+
+                <div className={`${showMenu ? "d-block" : "d-none"} d-lg-block`}>
+                    <ul className="nav flex-column flex-lg-row">
+                        <li className="nav-item">
+                            <Link className="nav-link text-white" to="/about">
+                                About
+                            </Link>
+                        </li>
+
+                        <li className="nav-item">
+                            <Link className="nav-link text-white" to="/contact">
+                                Contact
+                            </Link>
+                        </li>
+
+                        <li className="nav-item">
+                            <Link className="nav-link text-white" to="/privacy-policy">
+                                Privacy Policy
+                            </Link>
+                        </li>
+                    </ul>
+                    <div
+                        className="bg-warning text-danger rounded-pill px-3 py-1 ms-auto"
+                        onClick={() => navigate("/wishlist")}
+                        style={{ cursor: "pointer" }}
+                    >
+                        ❤️ {wishlistCnt || 0}
+                    </div>
+                </div>
             </div>
             {user ? (
                 <div
